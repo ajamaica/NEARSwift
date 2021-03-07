@@ -2,7 +2,9 @@ import Foundation
 
 public typealias SendTransactionRequest = [String]
 
-public struct SendTransactionResponse: Codable {
+public typealias SendTransactionAsyncResponse = String
+
+public struct SendTransactionAwaitResponse: Codable {
     let status: SendTransactionRespnseStatus
     let transaction: Transaction
     let transactionOutcome: TransactionOutcome
@@ -52,17 +54,8 @@ public struct SendTransactionRespnseStatus: Codable {
     }
 }
 
-public struct Action: Codable {
-    let transfer: Transfer
-
-    enum CodingKeys: String, CodingKey {
-        case transfer = "Transfer"
-    }
-}
-
-public struct Transfer: Codable {
-    let deposit: String
-}
+// Todo: Speciallize this Object
+typealias Action = JSONAny
 
 public struct TransactionOutcome: Codable {
     let proof: [JSONAny]

@@ -90,9 +90,23 @@ public class NEAR {
     }
     
     
+    public func sendTransactionAsync(signedTransaction: SendTransactionRequest, completion: @escaping (Result<SendTransactionAsyncResponse , Error>) -> Void){
+        call(method: .broadcast_tx_async, params: signedTransaction, completion: completion)
+    }
+    
+    public func sendTransactionAwait(signedTransaction: SendTransactionRequest, completion: @escaping (Result<SendTransactionAwaitResponse , Error>) -> Void){
+        call(method: .broadcast_tx_commit, params: signedTransaction, completion: completion)
+    }
+    
+    public func transactionStatus(params: TransactionStatusRequest, completion: @escaping (Result<TransactionStatusResponse , Error>) -> Void){
+        call(method: .tx, params: params, completion: completion)
+    }
+    
+    
     private func gasPriceCall<Params: Encodable, Response: Decodable>(params: Params, completion: @escaping (Result<Response , Error>) -> Void){
         call(method: .gas_price, params: params, completion: completion)
     }
+    
     
     private func queryCall<Params: Encodable, Response: Decodable>(params: Params, completion: @escaping (Result<Response , Error>) -> Void){
         call(method: .query, params: params, completion: completion)
@@ -100,10 +114,6 @@ public class NEAR {
     
     private func blockCall<Params: Encodable, Response: Decodable>(params: Params, completion: @escaping (Result<Response , Error>) -> Void){
         call(method: .block, params: params, completion: completion)
-    }
-    
-    public func sendTransaction(signedTransaction: SendTransactionRequest, completion: @escaping (Result<SendTransactionResponse , Error>) -> Void){
-        call(method: .broadcast_tx_commit, params: signedTransaction, completion: completion)
     }
     
     public func status(completion: @escaping (Result<NodeStatusResult , Error>) -> Void){

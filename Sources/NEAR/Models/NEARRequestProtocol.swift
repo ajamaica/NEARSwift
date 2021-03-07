@@ -3,6 +3,7 @@ import Foundation
 public enum Method: String, Encodable {
     case query
     case status
+    case broadcast_tx_async = "broadcast_tx_async"
     case broadcast_tx_commit = "broadcast_tx_commit"
     case tx
     case block

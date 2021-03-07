@@ -47,12 +47,24 @@ final class NEARTests: XCTestCase {
         wait(for: [expectation], timeout: 0.1)
     }
     
-    func testSendTransactionCallError() {
+    func testSendTransactionCallAsync() {
         let expectation = XCTestExpectation(description: "Network Call")
         let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: URLSession.shared, enableDebugLogs: true))
-        near.sendTransaction(signedTransaction: [    "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDQAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldIODI4YfV/QS++blXpQYT+bOsRblTRW4f547y/LkvMQ9AQAAAAMAAACh7czOG8LTAAAAAAAAAAXcaTJzu9GviPT7AD4mNJGY79jxTrjFLoyPBiLGHgBi8JK1AnhK8QknJ1ourxlvOYJA2xEZE8UR24THmSJcLQw="]) { (result) in
+        near.sendTransactionAsync(signedTransaction: [    "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE="]) { (result) in
             debugPrint(result)
-            if case .failure = result {
+            if case .success = result {
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
+    func testSendTransactionCallAwait() {
+        let expectation = XCTestExpectation(description: "Network Call")
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: URLSession.shared, enableDebugLogs: true))
+        near.sendTransactionAwait(signedTransaction: [    "DgAAAHNlbmRlci50ZXN0bmV0AOrmAai64SZOv9e/naX4W15pJx0GAap35wTT1T/DwcbbDwAAAAAAAAAQAAAAcmVjZWl2ZXIudGVzdG5ldNMnL7URB1cxPOu3G8jTqlEwlcasagIbKlAJlF5ywVFLAQAAAAMAAACh7czOG8LTAAAAAAAAAGQcOG03xVSFQFjoagOb4NBBqWhERnnz45LY4+52JgZhm1iQKz7qAdPByrGFDQhQ2Mfga8RlbysuQ8D8LlA6bQE="]) { (result) in
+            debugPrint(result)
+            if case .success = result {
                 expectation.fulfill()
             }
         }
@@ -280,6 +292,33 @@ final class NEARTests: XCTestCase {
 
         let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: tuple.session, enableDebugLogs: true))
         near.genesisConfig { (result) in
+            debugPrint(result)
+            if case .success = result {
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
+    func testTransactionStatus() {
+        let expectation = XCTestExpectation(description: "Network Call")
+
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: URLSession.shared, enableDebugLogs: true))
+        near.transactionStatus(params: TransactionStatusRequest(transactionHash: "5VqpkY1pwvhePFGquhvTUhvCH5LVZuxAaovwYyeDBuKr", accountId: "sender.testnet")){ (result) in
+            debugPrint(result)
+            if case .success = result {
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
+    func testtestTransactionStatusMock() {
+        let expectation = XCTestExpectation(description: "Network Call")
+        let tuple: (session: URLSession, stub: NEARResponse<TransactionStatusResponse>) = getMockURLSession(fileName: "transactionStatus")
+
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: tuple.session, enableDebugLogs: true))
+        near.transactionStatus(params: TransactionStatusRequest(transactionHash: "5VqpkY1pwvhePFGquhvTUhvCH5LVZuxAaovwYyeDBuKr", accountId: "sender.testnet")){ (result) in
             debugPrint(result)
             if case .success = result {
                 expectation.fulfill()
