@@ -5,7 +5,7 @@ public typealias SendTransactionRequest = [String]
 public typealias SendTransactionAsyncResponse = String
 
 public struct SendTransactionAwaitResponse: Codable {
-    let status: SendTransactionRespnseStatus
+    let status: SendTransactionResponseStatus
     let transaction: Transaction
     let transactionOutcome: TransactionOutcome
     let receiptsOutcome: [ReceiptsOutcome]
@@ -34,7 +34,7 @@ public struct ReceiptsOutcomeOutcome: Codable {
     let receiptIDS: [String]
     let gasBurnt: Int
     let tokensBurnt, executorID: String
-    let status: SendTransactionRespnseStatus
+    let status: SendTransactionResponseStatus
 
     enum CodingKeys: String, CodingKey {
         case logs
@@ -46,7 +46,7 @@ public struct ReceiptsOutcomeOutcome: Codable {
     }
 }
 
-public struct SendTransactionRespnseStatus: Codable {
+public struct SendTransactionResponseStatus: Codable {
     let successValue: String
 
     enum CodingKeys: String, CodingKey {
@@ -54,22 +54,8 @@ public struct SendTransactionRespnseStatus: Codable {
     }
 }
 
-// Todo: Speciallize this Object
-typealias Action = JSONAny
-
-public struct TransactionOutcome: Codable {
-    let proof: [JSONAny]
-    let blockHash, id: String
-    let outcome: TransactionOutcomeOutcome
-
-    enum CodingKeys: String, CodingKey {
-        case proof
-        case blockHash = "block_hash"
-        case id, outcome
-    }
-}
-
-public struct TransactionOutcomeOutcome: Codable {
+// MARK: - TransactionOutcomeOutcome
+struct TransactionOutcomeOutcome: Codable {
     let logs: [JSONAny]
     let receiptIDS: [String]
     let gasBurnt: Int
@@ -86,11 +72,15 @@ public struct TransactionOutcomeOutcome: Codable {
     }
 }
 
-public struct PurpleStatus: Codable {
-    let successReceiptID: String
+public struct TransactionOutcome: Codable {
+    let proof: [Proof]
+    let blockHash, id: String
+    let outcome: TransactionOutcomeOutcome
 
     enum CodingKeys: String, CodingKey {
-        case successReceiptID = "SuccessReceiptId"
+        case proof
+        case blockHash = "block_hash"
+        case id, outcome
     }
 }
 
