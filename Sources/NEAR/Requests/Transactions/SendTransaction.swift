@@ -1,5 +1,7 @@
 import Foundation
 
+public typealias SendTransactionRequest = [String]
+
 public struct SendTransactionResponse: Codable {
     let status: SendTransactionRespnseStatus
     let transaction: Transaction

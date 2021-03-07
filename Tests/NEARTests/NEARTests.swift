@@ -186,6 +186,22 @@ final class NEARTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     
+    func testCallContractFunctionMock() {
+        let expectation = XCTestExpectation(description: "Network Call")
+        
+        let tuple: (session: URLSession, stub: NEARResponse<CallContractFunctionResponse>) = getMockURLSession(fileName: "callContractFunction")
+        
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: tuple.session, enableDebugLogs: true))
+        near.callContractFunction(params: CallContractFunctionRequest(accountID: "dev-1615008631986-5402557", methodName: "getCounter", blockIdOrFinality: .finality(.final), argsBase64: "")) { (result) in
+            debugPrint(result)
+            if case let .success(response) = result {
+                XCTAssertEqual(response.blockHash, tuple.stub.result?.blockHash)
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
     func testCallContractCodeChanges() {
         let expectation = XCTestExpectation(description: "Network Call")
         let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: URLSession.shared, enableDebugLogs: true))
@@ -222,25 +238,60 @@ final class NEARTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     
-    func testCallContractFunctionMock() {
+    func testBlockChanges() {
         let expectation = XCTestExpectation(description: "Network Call")
-        
-        let tuple: (session: URLSession, stub: NEARResponse<CallContractFunctionResponse>) = getMockURLSession(fileName: "callContractFunction")
-        
-        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: tuple.session, enableDebugLogs: true))
-        near.callContractFunction(params: CallContractFunctionRequest(accountID: "dev-1615008631986-5402557", methodName: "getCounter", blockIdOrFinality: .finality(.final), argsBase64: "")) { (result) in
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: URLSession.shared, enableDebugLogs: true))
+        near.blockDetailsChanges(params: .init(blockIdOrFinality: .hash("CtUCuCMHEKQTswpDgY96UwQmZiC4hX8SiLWuihVYdENS"))) { (result) in
             debugPrint(result)
-            if case let .success(response) = result {
-                XCTAssertEqual(response.blockHash, tuple.stub.result?.blockHash)
+            if case .success = result {
                 expectation.fulfill()
             }
         }
         wait(for: [expectation], timeout: 10.0)
     }
+    
+    func testGasPrice() {
+        let expectation = XCTestExpectation(description: "Network Call")
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: URLSession.shared, enableDebugLogs: true))
+        near.gasPrice(params: .null) { (result) in
+            debugPrint(result)
+            if case .success = result {
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
+    func testGenesisConfig() {
+        let expectation = XCTestExpectation(description: "Network Call")
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: URLSession.shared, enableDebugLogs: true))
+        near.genesisConfig { (result) in
+            debugPrint(result)
+            if case .success = result {
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
+    func testGenesisConfigMock() {
+        let expectation = XCTestExpectation(description: "Network Call")
+        let tuple: (session: URLSession, stub: NEARResponse<GenesisConfigResponse>) = getMockURLSession(fileName: "genesisConfig")
+
+        let near = NEAR(environment: .testnet, router: Router<NEAREndpoint>(session: tuple.session, enableDebugLogs: true))
+        near.genesisConfig { (result) in
+            debugPrint(result)
+            if case .success = result {
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
 }
 
 func stubbedResponse(_ filename: String) -> Data {
-    @objc class FeelitTests: NSObject { }
+    @objc class NearTests: NSObject { }
     let thisSourceFile = URL(fileURLWithPath: #file)
     let thisDirectory = thisSourceFile.deletingLastPathComponent()
     let resourceURL = thisDirectory.appendingPathComponent("fixtures/\(filename).json")

@@ -9,6 +9,7 @@ public enum Method: String, Encodable {
     case chunk
     case validators
     case gas_price
+    case experimental_changes_in_block = "EXPERIMENTAL_changes_in_block"
     case experimental_changes = "EXPERIMENTAL_changes"
     case experimental_genesisConfig = "EXPERIMENTAL_genesis_config"
     case lightClientProof = "EXPERIMENTAL_light_client_proof"

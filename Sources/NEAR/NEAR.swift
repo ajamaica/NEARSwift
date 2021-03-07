@@ -67,8 +67,31 @@ public class NEAR {
         blockCall(params: params, completion: completion)
     }
     
+    // Block Details Changes
+    public func blockDetailsChanges(params: BlockChangesRequest, completion: @escaping (Result<BlockChangesResponse , Error>) -> Void){
+        experimentalChangesInBlock(params: params, completion: completion)
+    }
+    
+    // Block Details Changes
+    public func gasPrice(params: GasPriceRequest, completion: @escaping (Result<GasPriceResponse , Error>) -> Void){
+        gasPriceCall(params: params, completion: completion)
+    }
+    
+    public func genesisConfig(completion: @escaping (Result<GenesisConfigResponse , Error>) -> Void){
+        call(method: .experimental_genesisConfig, params: JSONNull(), completion: completion)
+    }
+    
     private func experimentalChanges<Params: Encodable, Response: Decodable>(params: Params, completion: @escaping (Result<Response , Error>) -> Void){
         call(method: .experimental_changes, params: params, completion: completion)
+    }
+    
+    private func experimentalChangesInBlock<Params: Encodable, Response: Decodable>(params: Params, completion: @escaping (Result<Response , Error>) -> Void){
+        call(method: .experimental_changes_in_block, params: params, completion: completion)
+    }
+    
+    
+    private func gasPriceCall<Params: Encodable, Response: Decodable>(params: Params, completion: @escaping (Result<Response , Error>) -> Void){
+        call(method: .gas_price, params: params, completion: completion)
     }
     
     private func queryCall<Params: Encodable, Response: Decodable>(params: Params, completion: @escaping (Result<Response , Error>) -> Void){
@@ -79,7 +102,7 @@ public class NEAR {
         call(method: .block, params: params, completion: completion)
     }
     
-    public func sendTransaction(signedTransaction: [String], completion: @escaping (Result<SendTransactionResponse , Error>) -> Void){
+    public func sendTransaction(signedTransaction: SendTransactionRequest, completion: @escaping (Result<SendTransactionResponse , Error>) -> Void){
         call(method: .broadcast_tx_commit, params: signedTransaction, completion: completion)
     }
     
